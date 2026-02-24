@@ -1,0 +1,9 @@
+services:
+  dump1090:
+    container_name: dump1090
+    image: ghcr.io/tyz/dump1090-docker:latest
+    restart: unless-stopped
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+    environment:
+      CLI_ARGS: "--ppm -3 --measure-noise --gain 30 --no-fix --no-fix-df --stats --lat 51.889997 --lon 1.476164"

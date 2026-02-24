@@ -15,8 +15,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends \
         build-essential fakeroot debhelper pkg-config devscripts libncurses5-dev librtlsdr-dev
 
-RUN pwd ; ls -la
-
 COPY ./dump1090-source dump1090-source
 
 WORKDIR /dump1090-source
