@@ -1,9 +1,18 @@
 services:
+
   dump1090:
     container_name: dump1090
-    image: ghcr.io/tyz/dump1090-docker:latest
+    image: ghcr.io/tyz/dump1090:latest
     restart: unless-stopped
     volumes:
       - /dev/bus/usb:/dev/bus/usb
+      - ./data:/data
     environment:
-      CLI_ARGS: "--ppm -3 --measure-noise --gain 30 --no-fix --no-fix-df --stats --lat 51.889997 --lon 1.476164"
+      CLI_ARGS: "--ppm -3 --measure-noise --gain 30 --no-fix --no-fix-df --stats-every 3600 --lat 51.889997 --lon 1.476164 --write-json /data"
+
+  dump1090-web:
+    container_name: dump1090-web
+    image: ghcr.io/tyz/dump1090-web:latest
+    restart: unless-stopped
+    volumes:
+      - ./data:/srv/public_html/data

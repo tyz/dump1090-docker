@@ -41,7 +41,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         librtlsdr0 libncurses6
 
 COPY --from=builder /dump1090-source/dump1090 /dump1090-source/view1090 /dump1090-source/starch-benchmark .
-COPY --from=builder /dump1090-source/public_html public_html
 
 COPY ./docker/entrypoint.sh entrypoint.sh
 RUN chmod 0755 entrypoint.sh

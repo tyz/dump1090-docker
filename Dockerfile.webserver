@@ -1,0 +1,11 @@
+FROM busybox:stable
+
+RUN adduser -D www
+
+COPY ./dump1090-source/public_html /srv/public_html
+
+WORKDIR /srv/public_html
+
+USER www
+
+CMD ["busybox", "httpd", "-fvp", "8080"]

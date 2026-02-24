@@ -5,13 +5,15 @@ on:
     branches: [master]
     paths:
       - 'Dockerfile'
+      - 'Dockerfile.webserver'
       - 'docker/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-arm64.yaml'
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  DUMP1090_IMAGE_NAME: ${{ github.repository_owner }}/dump1090
+  WEB_IMAGE_NAME: ${{ github.repository_owner }}/dump1090-web
 
 jobs:
   docker-build:
@@ -57,7 +59,17 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.DUMP1090_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-
+            type=raw,value=${{ steps.version.outputs.package_version }}
+
+      - name: Docker metadata web
+        id: meta-web
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE_NAME }}
           tags: |
             type=raw,value=latest
             type=sha,prefix=sha-
@@ -73,3 +85,15 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=docker-${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=docker-${{ github.workflow }}
+
+      - name: Build and push web Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.webserver
+          push: ${{ github.event_name != 'pull_request' }}
+          provenance: false
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+          cache-from: type=gha,scope=docker-web-${{ github.workflow }}
+          cache-to: type=gha,mode=max,scope=docker-web-${{ github.workflow }}
