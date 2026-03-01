@@ -9,6 +9,6 @@ RUN curl -sL https://github.com/wiedehopf/tar1090/archive/refs/heads/master.tar.
     tar -xzvf - --strip-components=2 tar1090-master/html && \
     sed -i 's/const MapPath = ".*";/const MapPath = "data";/' config.js
 
-COPY nginx-tar1090.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx-tar1090.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080

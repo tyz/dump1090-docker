@@ -1,18 +1,27 @@
 services:
 
-  dump1090:
-    container_name: dump1090
-    image: ghcr.io/tyz/dump1090:latest
+  readsb:
+    container_name: readsb
+    image: ghcr.io/tyz/readsb:latest
     restart: unless-stopped
     volumes:
-      - /dev/bus/usb:/dev/bus/usb
-      - ./data:/data
+      - /dev/bus/usb:/dev/bus/usb:ro
+      - ./data:/data:rw
     environment:
-      CLI_ARGS: "--ppm -3 --measure-noise --gain 30 --no-fix --no-fix-df --stats-every 3600 --lat 51.889997 --lon 1.476164 --write-json /data"
+      CLI_ARGS: >
+       --device-type rtlsdr
+       --gain 25
+       --lat 51.889997,
+       --lon 1.476164,
+       --write-json /data
+       --write-json-every 1
+       --net
+       --bus-multiplier 1.0
+       --json-location-accuracy 2
 
-  dump1090-web:
-    container_name: dump1090-web
-    image: ghcr.io/tyz/dump1090-web:latest
+  tar1090:
+    container_name: tar1090
+    image: ghcr.io/tyz/tar1090:latest
     restart: unless-stopped
     volumes:
-      - ./data:/srv/public_html/data
+      - ./data:/usr/share/nginx/html/data:rw

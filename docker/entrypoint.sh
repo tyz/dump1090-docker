@@ -2,4 +2,4 @@
 
 set -x
 
-exec /app/dump1090 ${CLI_ARGS}
+exec /app/readsb ${CLI_ARGS}
