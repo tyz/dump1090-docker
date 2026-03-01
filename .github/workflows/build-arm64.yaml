@@ -14,6 +14,7 @@ env:
   REGISTRY: ghcr.io
   DUMP1090_IMAGE_NAME: ${{ github.repository_owner }}/dump1090
   WEB_IMAGE_NAME: ${{ github.repository_owner }}/dump1090-web
+  TAR1090_IMAGE_NAME: ${{ github.repository_owner }}/tar1090
 
 jobs:
   docker-build:
@@ -55,7 +56,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker metadata
+      - name: Docker metadata dump1090
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -75,7 +76,17 @@ jobs:
             type=sha,prefix=sha-
             type=raw,value=${{ steps.version.outputs.package_version }}
 
-      - name: Build and push Docker image
+      - name: Docker metadata tar1090
+        id: meta-tar
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.TAR1090_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-
+            type=raw,value=${{ steps.version.outputs.package_version }}
+
+      - name: Build and push dump1090 Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -95,5 +106,17 @@ jobs:
           provenance: false
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
+          cache-from: type=gha,scope=docker-web-${{ github.workflow }}
+          cache-to: type=gha,mode=max,scope=docker-web-${{ github.workflow }}
+
+      - name: Build and push tar1090 Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.tar1090
+          push: ${{ github.event_name != 'pull_request' }}
+          provenance: false
+          tags: ${{ steps.meta-tar.outputs.tags }}
+          labels: ${{ steps.meta-tar.outputs.labels }}
           cache-from: type=gha,scope=docker-web-${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=docker-web-${{ github.workflow }}

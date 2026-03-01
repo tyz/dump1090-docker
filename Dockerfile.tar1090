@@ -1,0 +1,14 @@
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+RUN mkdir data chunks
+
+RUN apk add --no-cache curl tar
+
+RUN curl -sL https://github.com/wiedehopf/tar1090/archive/refs/heads/master.tar.gz | \
+    tar -xzvf - --strip-components=2 tar1090-master/html && \
+    sed -i 's/const MapPath = ".*";/const MapPath = "data";/' config.js
+
+COPY nginx-tar1090.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
