@@ -9,16 +9,16 @@ services:
       - /dev/bus/usb:/dev/bus/usb:ro
       - ./data:/data:rw
     command: >
-        --device-type rtlsdr
-        --ppm 3
-        --gain 25
-        --lat 51.889997
-        --lon 1.476164
-        --write-json /data
-        --write-json-every 1
-        --write-json-globe-index
-        --json-location-accuracy 2
-        --net
+      --device-type rtlsdr
+      --ppm 3
+      --gain 25
+      --lat 51.889997
+      --lon 1.476164
+      --write-json /data
+      --write-json-every 1
+      --write-json-globe-index
+      --json-location-accuracy 2
+      --net
 
   tar1090:
     container_name: tar1090

@@ -18,17 +18,20 @@ spec:
         app.kubernetes.io/name: ads-b
     spec:
       containers:
-      - command: >
-          --device-type rtlsdr
-          --ppm 3
-          --gain 25
-          --lat 51.889997
-          --lon 1.476164
-          --write-json /data
-          --write-json-every 1
-          --write-json-globe-index
-          --json-location-accuracy 2
-          --net
+      - args: [
+          "--device-type", "rtlsdr",
+          "--ppm", "3",
+          "--gain", "25",
+          "--lat", "51.889997",
+          "--lon", "1.476164",
+          "--lat", "52.39262973758624",
+          "--lon", "4.881165437400342",
+          "--write-json", "/data",
+          "--write-json-every", "1",
+          "--write-json-globe-index",
+          "--json-location-accuracy", "2",
+          "--net"
+        ]
         image: ghcr.io/tyz/readsb:latest
         imagePullPolicy: IfNotPresent
         name: readsb
