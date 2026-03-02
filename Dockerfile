@@ -42,8 +42,4 @@ WORKDIR /app
 
 COPY --from=builder /tmp/readsb/readsb .
 
-COPY ./docker/entrypoint.sh entrypoint.sh
-
-RUN chmod 0755 entrypoint.sh
-
-CMD ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/readsb"]

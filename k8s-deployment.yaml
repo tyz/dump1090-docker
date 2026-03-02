@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readsb-ads-b
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: readsb
+      app.kubernetes.io/name: ads-b
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: readsb
+        app.kubernetes.io/name: ads-b
+    spec:
+      containers:
+      - command: >
+          --device-type rtlsdr
+          --ppm 3
+          --gain 25
+          --lat 51.889997
+          --lon 1.476164
+          --write-json /data
+          --write-json-every 1
+          --write-json-globe-index
+          --json-location-accuracy 2
+          --net
+        image: ghcr.io/tyz/readsb:latest
+        imagePullPolicy: IfNotPresent
+        name: readsb
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /dev/bus/usb
+          name: dev-bus-usb
+          readOnly: true
+        - mountPath: /data
+          name: data
+          readOnly: false
+      - env:
+        - name: TZ
+          value: Europe/Amsterdam
+        image: ghcr.io/tyz/tar1090:latest
+        imagePullPolicy: IfNotPresent
+        name: tar1090
+        ports:
+        - containerPort: 30005
+          name: beast
+          protocol: TCP
+        - containerPort: 30002
+          name: raw
+          protocol: TCP
+        - containerPort: 30003
+          name: sbs
+          protocol: TCP
+        - containerPort: 8080
+          name: ui
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/data
+          name: data
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/hostname: office
+      tolerations:
+      - effect: NoSchedule
+        key: workload
+        operator: Equal
+        value: agent
+      volumes:
+      - hostPath:
+          path: /srv/readsb/data
+          type: DirectoryOrCreate
+        name: data
+      - hostPath:
+          path: /srv/readsb/chunks
+          type: DirectoryOrCreate
+        name: chunks
+      - hostPath:
+          path: /dev/bus/usb
+        name: dev-bus-usb

@@ -4,24 +4,25 @@ services:
     container_name: readsb
     image: ghcr.io/tyz/readsb:latest
     restart: unless-stopped
+    privileged: true
     volumes:
       - /dev/bus/usb:/dev/bus/usb:ro
       - ./data:/data:rw
-    environment:
-      CLI_ARGS: >
-       --device-type rtlsdr
-       --gain 25
-       --lat 51.889997,
-       --lon 1.476164,
-       --write-json /data
-       --write-json-every 1
-       --net
-       --bus-multiplier 1.0
-       --json-location-accuracy 2
+    command: >
+        --device-type rtlsdr
+        --ppm 3
+        --gain 25
+        --lat 51.889997
+        --lon 1.476164
+        --write-json /data
+        --write-json-every 1
+        --write-json-globe-index
+        --json-location-accuracy 2
+        --net
 
   tar1090:
     container_name: tar1090
     image: ghcr.io/tyz/tar1090:latest
     restart: unless-stopped
     volumes:
-      - ./data:/usr/share/nginx/html/data:rw
+      - ./data:/usr/share/nginx/html/data:ro
