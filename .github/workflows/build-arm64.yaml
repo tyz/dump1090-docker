@@ -6,14 +6,13 @@ on:
     paths:
       - 'Dockerfile'
       - 'Dockerfile.tar1090'
+      - 'Dockerfile.chunks'
       - 'docker/**'
       - '.github/workflows/build-arm64.yaml'
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  READSB_IMAGE_NAME: ${{ github.repository_owner }}/readsb
-  TAR1090_IMAGE_NAME: ${{ github.repository_owner }}/tar1090
 
 jobs:
   docker-build:
@@ -27,12 +26,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: readsb
+          - name: adsb-readsb
             file: Dockerfile
-            repo_url: https://raw.githubusercontent.com/wiedehopf/readsb/master/version
-          - name: tar1090
+            version_url: https://raw.githubusercontent.com/wiedehopf/readsb/master/version
+          - name: adsb-tar1090
             file: Dockerfile.tar1090
-            repo_url: https://raw.githubusercontent.com/wiedehopf/tar1090/master/version
+            version_url: https://raw.githubusercontent.com/wiedehopf/tar1090/master/version
+          - name: adsb-chunks
+            file: Dockerfile.chunks
+            version_url: https://raw.githubusercontent.com/wiedehopf/tar1090/master/version
 
     steps:
       - name: Checkout the repository
@@ -41,7 +43,7 @@ jobs:
       - name: Extract the version
         id: version
         run: |
-          VERSION=$(curl -s ${{ matrix.repo_url }})
+          VERSION=$(curl -s ${{ matrix.version_url }})
           echo "app_version=${VERSION}" | tee -a $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
