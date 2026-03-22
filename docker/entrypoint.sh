@@ -7,7 +7,7 @@ if [ "${ENABLE_BIAS_T}" = "true" ]; then
     echo
 fi
 
-if [ "${HEYWHATSTHAT_ID}" ]; then
+if [ "${HEYWHATSTHAT_ID}" -a ! -f /data/upintheair.json ]; then
     echo "Creating upintheair.json for altitudes ${HEYWHATSTHAT_ID_ALTS-30000}"
     curl -sLo /data/upintheair.json "http://www.heywhatsthat.com/api/upintheair.json?id=${HEYWHATSTHAT_ID}&refraction=0.25&alts=${HEYWHATSTHAT_ID_ALTS-30000}"
     echo
