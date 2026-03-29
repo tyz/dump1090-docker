@@ -1,38 +1,57 @@
+volumes:
+  tar1090-db:
+
 services:
 
   readsb:
     container_name: readsb
-    image: ghcr.io/tyz/readsb:latest
+    image: ghcr.io/tyz/adsb-readsb:latest
     restart: unless-stopped
     privileged: true
     volumes:
       - /dev/bus/usb:/dev/bus/usb:ro
       - ./data:/data:rw
-    env:
+      - tar1090-db:/tar1090-db
+    environment:
       ENABLE_BIAS_T: false
       HEYWHATSTHAT_ID: "ABC12DEF"
       HEYWHATSTHAT_ID_ALTS: "5000,15000,30000"
+      AIRCRAFT_DB_DIR: "/tar1090-db"
+      INSTALL_AIRCRAFT_DB: true
     command: >
+      --quiet
       --device-type rtlsdr
       --ppm 3
       --gain auto-verbose
       --lat 51.889997
       --lon 1.476164
       --write-json /data
-      --write-json-every 1
-      --write-json-globe-index
       --write-globe-history /data/globe_history
       --write-receiver-id-json
-      --json-location-accuracy 2
-      --db-file /usr/local/share/tar1090/aircraft.csv.gz
+      --db-file /tar1090-db/aircraft.csv.gz
       --heatmap 30
       --net
       --net-api-port 30154
-      --tar1090-use-api
+      --modeac
 
   tar1090:
     container_name: tar1090
-    image: ghcr.io/tyz/tar1090:latest
+    image: ghcr.io/tyz/adsb-tar1090:latest
     restart: unless-stopped
     volumes:
       - ./data:/usr/share/nginx/html/data:ro
+    ports:
+      - "8080:8080/tcp"
+
+  chunks:
+    container_name: chunks
+    image: ghcr.io/tyz/adsb-chunks:latest
+    restart: unless-stopped
+    environment:
+      SRC_DIR: "/data"
+      GZIP_LVL: 6
+      HISTORY_SIZE: 1000
+      CHUNK_SIZE: 60
+      INTERVAL: 8
+    volumes:
+      - ./data:/data:rw
