@@ -1,8 +1,8 @@
 #!/bin/sh
 
-UPINTHEAIR="${UPINTHEAIR:-/data/upintheair.json}"
+UPINTHEAIR="${UPINTHEAIR:-/var/ads-b/data/upintheair.json}"
 HEYWHATSTHAT_ID_ALTS="${HEYWHATSTHAT_ID_ALTS-30000}"
-AIRCRAFT_DB_DIR="${AIRCRAFT_DB_DIR:-/usr/local/share/tar1090}"
+AIRCRAFT_DB_DIR="${AIRCRAFT_DB_DIR:-/var/ads-b/tar1090-db}"
 INSTALL_AIRCRAFT_DB="${INSTALL_AIRCRAFT_DB-false}"
 
 if [ "${ENABLE_BIAS_T}" = "true" ]; then
