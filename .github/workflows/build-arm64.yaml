@@ -1,12 +1,10 @@
-name: Build Docker image (ARM64)
+name: Build Docker images (ARM64)
 
 on:
   push:
     branches: [master]
     paths:
-      - 'chunks/**'
-      - 'readsb/**'
-      - 'tar1090/**'
+      - 'docker/**'
       - '.github/workflows/build-arm64.yaml'
   workflow_dispatch:
 
@@ -15,7 +13,7 @@ env:
 
 jobs:
   changes:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: read
     outputs:
@@ -27,15 +25,16 @@ jobs:
         with:
           filters: |
             chunks:
-              - chunks/**
+              - docker/chunks/**
               - .github/workflows/build-arm64.yaml
             readsb:
-              - readsb/**
+              - docker/readsb/**
               - .github/workflows/build-arm64.yaml
             tar1090:
-              - tar1090/**
+              - docker/tar1090/**
               - .github/workflows/build-arm64.yaml
-  docker-build:
+
+  docker-build-arm64:
     needs: changes
     runs-on: ubuntu-24.04-arm
     permissions:
@@ -87,7 +86,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.package }}
+          context: docker/${{ matrix.package }}
           push: ${{ github.event_name != 'pull_request' }}
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
