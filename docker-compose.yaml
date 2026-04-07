@@ -53,5 +53,6 @@ services:
       HISTORY_SIZE: 1000
       CHUNK_SIZE: 60
       INTERVAL: 8
+      PTRACKS: 8
     volumes:
       - ./data:/data:rw

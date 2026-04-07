@@ -1,0 +1,55 @@
+## Sensor
+
+```yaml
+sensor:
+  - platform: rest
+    unique_id: ads_b_current_in_area
+    name: "ADS-B Planes in area last 24 hours"
+    resource: "http://readsb-ads-b.ads-b.svc.cluster.local:8080/data/flyovers.json"
+    value_template: "{{ value_json.total }}"
+    json_attributes:
+      - aircraft
+    scan_interval: 10
+    state_class: total
+```
+
+## Lovelace markdown card
+
+```yaml
+type: markdown
+grid_options:
+  columns: full
+  rows: auto
+content: |
+  {%- macro vdir(s) -%}
+  {%- if s is number -%}
+  {%- if s | float < 0 -%}
+  ➘
+  {%- elif s | float > 0 -%}
+  ➚
+  {%- else -%}
+  →
+  {%- endif -%}
+  {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro heading2str(degrees) -%}
+  {%- if degrees is number -%}
+  {%- set directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'] -%}
+  {%- set index = int((degrees / 22.5) + 0.5) -%}
+  {{ directions[index % 16] }}
+  {%- endif -%}
+  {%- endmacro -%}
+
+  {% set aircraft = state_attr('sensor.ads_b_current_planes_in_area', 'aircraft') | sort(attribute='timestamp', reverse=true) %}
+
+  | time | type | reg | dist | alt | speed | photo |
+  |------|------|-----|------|-----|-------|-------|
+  {%- for plane in aircraft %}
+  | {{ as_datetime(plane.timestamp).astimezone() }} | {{ plane.type }} | [{{
+  plane.registration }} ({{ plane.flight }})]({{ plane.link }}) | {{
+  plane.min_dist }}m | {{ plane.alt }}m {{ vdir(plane.vspeed) }} | {{
+  plane.speed }} km/u ({{ heading2str(plane.heading) }}) | {% if plane.images
+  %}![Vliegtuig]({{ plane.images.thumbnail }}){% endif %} |
+  {%- endfor %}
+```

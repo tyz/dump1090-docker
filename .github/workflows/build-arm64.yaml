@@ -26,13 +26,12 @@ jobs:
           filters: |
             chunks:
               - docker/chunks/**
-              - .github/workflows/build-arm64.yaml
+            ha-traces:
+              - docker/ha-traces/**
             readsb:
               - docker/readsb/**
-              - .github/workflows/build-arm64.yaml
             tar1090:
               - docker/tar1090/**
-              - .github/workflows/build-arm64.yaml
 
   docker-build-arm64:
     needs: changes
@@ -54,10 +53,10 @@ jobs:
         id: version
         run: |
           case ${{ matrix.package }} in
-            readsb) NAME=readsb ;;
-            *) NAME=tar1090 ;;
+            readsb) VERSION=$(curl -s https://raw.githubusercontent.com/wiedehopf/readsb/master/version) ;;
+            chunks|tar1090) VERSION=$(curl -s https://raw.githubusercontent.com/wiedehopf/tar1090/master/version) ;;
+            *) VERSION="latest"
           esac
-          VERSION=$(curl -s https://raw.githubusercontent.com/wiedehopf/${NAME}/master/version)
           echo "app_version=${VERSION}" | tee -a $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx

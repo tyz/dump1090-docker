@@ -212,6 +212,8 @@ spec:
           value: "1000"
         - name: INTERVAL
           value: "8"
+        - name: PTRACKS
+          value: "8"
         - name: SRC_DIR
           value: /data
         - name: TZ
