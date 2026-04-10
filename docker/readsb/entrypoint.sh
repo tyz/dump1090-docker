@@ -22,7 +22,7 @@ if [ "${INSTALL_AIRCRAFT_DB}" = "true" ]; then
     if [ -f ${AIRCRAFT_DB_DIR}/aircraft.csv.gz ]; then
         echo "Updating aircraft database"
         cd ${AIRCRAFT_DB_DIR}
-        git pull
+        git pull --rebase
         cd -
     else
         echo "Installing aircraft database"

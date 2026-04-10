@@ -361,7 +361,7 @@ def analyze_traces(allow_list=[]):
 
     if not has_changes:
         logger.info(
-            f"No changes. Scanned {filecount} new/changed files, loaded {cache_hits} from cache,"
+            f"No changes. Scanned {filecount} new/changed files, loaded {cache_hits} from cache, "
             f"deleted {len(dangling_nearby)} cache entries"
         )
         return
@@ -373,7 +373,7 @@ def analyze_traces(allow_list=[]):
         }
         json.dump(result, f, indent=2)
         logger.info(
-            f"Wrote {len(all_aircraft)} entries, scanned new/changed {filecount} files, loaded {cache_hits} from cache,"
+            f"Wrote {len(all_aircraft)} entries, scanned new/changed {filecount} files, loaded {cache_hits} from cache, "
             f"deleted {len(dangling_nearby)} cache entries"
         )
 
