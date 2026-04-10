@@ -92,11 +92,12 @@ def read_json(path, quiet=True, open_func=gzip.open) -> list[dict] | None:
 
 
 def ts_replay_str(ts) -> str:
-    return (datetime.utcfromtimestamp(ts) - timedelta(minutes=3)).strftime("%Y-%m-%d-%H:%M")
+    dt = datetime.fromtimestamp(ts, datetime.UTC).
+    return (dt - timedelta(minutes=3)).strftime("%Y-%m-%d-%H:%M")
 
 
 def ts_heatmap_file(ts) -> str:
-    dt = datetime.utcfromtimestamp(ts)
+    dt = datetime.fromtimestamp(ts, datetime.UTC).
     fname = dt.hour * 2
     if dt.minute > 30:
         fname += 1
@@ -104,7 +105,8 @@ def ts_heatmap_file(ts) -> str:
 
 
 def ts_str(ts) -> str:
-    return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S") if ts else "None"
+    dt = datetime.fromtimestamp(ts, datetime.UTC).
+    return dt.strftime("%Y-%m-%d %H:%M:%S") if ts else "None"
 
 
 def get_aircraft_photo(hex_code) -> dict:
